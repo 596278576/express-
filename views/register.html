@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>表单注册</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background-color: #F7F7F7;
+		}
+
+		ul {
+			margin: 0;
+			padding: 50px;
+			list-style: none;
+		}
+
+		.register {
+			width: 800px;
+			margin: 50px auto;
+			background-color: #FFF;
+			border: 1px solid #CCC;
+			border-radius: 5px;
+		}
+
+		li {
+			display: flex;
+			margin: 20px 0;
+		}
+
+		label,
+		input {
+			display: block;
+			float: left;
+			height: 46px;
+			font-size: 24px;
+			box-sizing: border-box;
+			color: #333;
+		}
+
+		label {
+			width: 200px;
+			line-height: 46px;
+			margin-right: 30px;
+			text-align: right;
+		}
+
+		input {
+			width: 320px;
+			padding: 8px;
+			line-height: 1;
+			outline: none;
+			position: relative;
+		}
+
+		input.code {
+			width: 120px;
+		}
+
+		input.verify {
+			width: 190px;
+			margin-left: 10px;
+		}
+
+		input.disabled {
+			background-color: #CCC !important;
+			cursor: not-allowed !important;
+		}
+
+		input[type=button] {
+			border: none;
+			color: #FFF;
+			background-color: #E64145;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		.tips {
+			position: fixed;
+			top: 0;
+			width: 100%;
+			height: 40px;
+			text-align: center;
+		}
+
+		.tips p {
+			min-width: 300px;
+			max-width: 400px;
+			line-height: 40px;
+			margin: 0 auto;
+			color: #FFF;
+			display: none;
+			background-color: #C91623;
+		}
+	</style>
+	<link rel="stylesheet" href="../static/css/bootstrap.css">
+</head>
+
+<body>
+	<div class="register">
+		<form id="ajaxForm">
+			<ul>
+				<li>
+					<label for="">用户名</label>
+					<input type="text" name="userName" class="name">
+					<span class="prompt1"></span>
+				</li>
+				<li>
+					<label for="">请设置密码</label>
+					<input type="password" name="password" class="pass">
+					<span class="prompt2"></span>
+				</li>
+				<li>
+					<label for="">请确认密码</label>
+					<input type="password" name="" class="repass">
+					<span class="prompt3"></span>
+
+				</li>
+				<li>
+					<label for="">验证手机</label>
+					<input type="text" name="phone" class="mobile">
+					<span class="prompt4"></span>
+
+				</li>
+				<li>
+					<label for="">短信验证码</label>
+					<input type="text" name="" class="code">
+					<!-- <div class="btn verify disabled">获取验证码</div> -->
+					<input type="button" value="获取验证码" class="verify">
+					<span class="prompt5"></span>
+
+				</li>
+				<li>
+					<label for=""></label>
+					<input type="button" class="submit " value="立即注册">
+					<span class="prompt6"></span>
+				</li>
+			</ul>
+		</form>
+	</div>
+	<div class="tips">
+		<p></p>
+	</div>
+
+	<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">提示</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        新增成功，稍后为您自动跳转
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="../static/js/jquery.js"></script>
+<script src="../static/js/bootstrap.js"></script>
+
+<script>
+$('.name').on('blur',function(){
+	let userName=$(this).val();
+	if(userName.trim().length==0){
+		$('.container-fluid').text('用户名不能为空');
+        $('#modelId').modal();
+		return;
+	}
+	$.ajax({
+		url:'http://127.0.0.1:8080/isUserNameExist',
+		type:'get',
+		data:{
+			userName:userName
+		},
+		success:function(res){
+			if(res.code!==200){
+				$('.container-fluid').text(res.msg);
+                $('#modelId').modal();
+				return;
+			}
+		}
+
+	})
+})
+
+$('.pass').on('blur',function(){
+	let password=$(this).val();
+	if(password.trim().length<6||!(/[a-zA-Z]/.test(password))){
+		$('.container-fluid').text('密码强度太弱');
+        $('#modelId').modal();
+		return;
+	}
+})
+$('.repass').on('blur',function(){
+	let password2=$(this).val();
+	let password=$('.pass').val();
+	if(password!==password2){
+		$('.container-fluid').text('密码不一致');
+        $('#modelId').modal();
+		return;
+	}
+})
+$('.verify').on('click',function(){
+	let phone=$('.mobile').val();
+	if(phone.trim().length!=11){
+		$('.container-fluid').text('电话格式不正确');
+        $('#modelId').modal();
+		return;
+	}else{
+		setTimeout(function(){
+			let num=Math.floor(Math.random()*10000);
+			$('.code').val(num);
+		},3000)
+	}
+})
+
+$('.submit').on('click',function(){
+	$('.name').blur();
+	$('.pass').blur();
+	$('.repass').blur();
+	$('.verify').click();
+	let userName=$('.name').val();
+	let password=$('.pass').val();
+	let phone=$('.mobile').val();
+	$.ajax({
+		url:'http://127.0.0.1:8080/doRegister',
+		type:'post',
+		data:{
+			userName:userName,
+			password:password,
+			phone:phone
+		},
+		success:function(res){
+			if(res.code==200){
+				$('.container-fluid').text(res.msg+'即将跳转登录页面');
+        		$('#modelId').modal();
+				setTimeout(function(){
+					location.href='./login.html'
+				},3000)
+			}
+		}
+	})
+})
+</script>
+<!-- <script>
+$('.name').on('blur',function(){
+	let userName=$(this).val();
+	if(userName.trim().length==0){
+		return;
+	}
+	$.ajax({
+		url:'http://127.0.0.1:8080/isUserNameExist',
+		type:'get',
+		data:{
+			userName:userName
+		},
+		success:function(res){
+			$('.prompt1').text(res.msg);
+			if(res.code!==200){
+				return;
+			}
+			
+		}
+	})
+})
+$('.pass').on('blur',function(){
+	let password=$(this).val();
+	if(password.trim().length<6||!(/[a-zA-Z]/.test(password))){
+		$('.prompt2').text('密码强度太弱');
+		return;
+	}else{
+		$('.prompt3').text('验证通过');
+	}
+})
+$('.repass').on('blur',function(){
+	let password1=$(this).val();
+	let password=$('.pass').val();
+	if(password1!==password){
+		$('.prompt3').text('密码不一致');
+	}else{
+		$('.prompt3').text('验证通过');
+	}
+})
+$('.verify').on('click',function(){
+	let num=3;
+	let mobile=$('.mobile').val();
+	if(mobile.trim().length!=11){
+		$('.prompt4').text('手机号码有误');
+	}else{
+		$('.prompt4').text('验证通过');
+		let id=setInterval(function(){
+			let number=Math.floor(Math.random()*9999);
+			num--;
+			if(num==0){
+				$('.verify').val(number);
+			}
+		},1000)
+	}
+})
+$('.submit').on('click',function(){
+	let userName=$('.name').val();
+	let password=$('.pass').val();
+	let phone=$('.mobile').val();
+	if($('.name').val().trim().length==0){
+		$('.prompt1').text('用户名不能为空');
+		return;
+	}
+	$('.name').blur();
+	$('.pass').blur();
+	$.ajax({
+		url:'http://127.0.0.1:8080/doRegister',
+		type:'post',
+		data:{
+			userName:userName,
+			password:password,
+			phone:phone
+		},
+		success:function(res){
+			alert(res.msg);
+		}
+	})
+})
+</script> -->
+</html>

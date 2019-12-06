@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
+</head>
+
+<body>
+    <!-- <form action="">
+        用户名：<input type="text" name='username' value='jack'> <br>
+        密码：<input type="password" name='userpwd' value="123"> <br>
+        <input type="button" id="sub" value='登陆'>
+    </form> -->
+
+    <div class="container">
+        <form>
+            <div class="form-group" style="height: 120px;">
+
+            </div>
+            <fieldset class="form-group row">
+                <legend class="col-form-legend col-sm-1-12">请登录</legend>
+                <div class="offset-sm-2 col-sm-10">
+                    <div class="form-group">
+                        <label for="">用户名</label>
+                        <input type="text" class="form-control" name="userName" id="userName" aria-describedby="helpId"
+                            placeholder="">
+                        <small id="helpId" class="form-text text-muted">请输入您的用户名</small>
+                    </div>
+                </div>
+                <div class="offset-sm-2 col-sm-10">
+                    <div class="form-group">
+                        <label for="">密码</label>
+                        <input type="password" class="form-control" id="password" name="password"
+                            aria-describedby="helpId" placeholder="">
+                        <small id="helpId" class="form-text text-muted">请输入您的密码</small>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="form-group row">
+                <div class="offset-sm-2 col-sm-10">
+                    <input type="button" id="login-btn" class="btn btn-primary denglu" value="登录">
+                    <a href="./register.html" class="btn  btn-primary">注册</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">提示</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        Add rows here
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+                    <!-- <button type="button" class="btn btn-primary">确认</button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="../static/js/jquery.js"></script>
+<script src="../static/js/bootstrap.js"></script>
+<script src="../ajaxCode/02/ajax copy 2.js"></script>
+<script>
+    $('#userName').on('blur',function(){
+        let userName=$('#userName').val();
+        if(userName.trim().length==0){
+            $('.container-fluid').text('用户名不能为空')
+            $('#modelId').modal();
+        }
+    })
+    $('#password').on('blur',function(){
+        let password=$('#password').val();
+        if(password.trim().length==0){
+            $('.container-fluid').text('密码不能为空')
+            $('#modelId').modal();
+        }
+    })
+    $('.denglu').on('click',function(){
+
+        $('#userName').blur();
+        $('#password').blur();
+        let password=$('#password').val();
+        let userName=$('#userName').val();
+        $.ajax({
+            url:'http://127.0.0.1:8080/doLogin',
+            type:'post',
+            data:{
+                userName:userName,
+                password:password
+            },
+            success:function(res){
+                if(res.code==200){
+                    localStorage.setItem('userId',res.userId)
+                    $('.container-fluid').text(res.msg+'即将跳转主页')
+                    $('#modelId').modal();
+                    setTimeout(function(){
+                        location.href='./index.html'
+                    },3000)
+                }else{
+                    $('.container-fluid').text(res.msg)
+                    $('#modelId').modal();
+                }
+            }
+        })
+    })
+</script>
+<!-- <script>
+$('#userName').on('blur',function(){
+    let userName=$(this).val();
+    if(userName.trim().length==0){
+        $('.container-fluid').text('用户名不能为空')
+        $('#modelId').modal();
+        return;
+    }
+})
+$('#password').on('blur',function(){
+    let password=$(this).val()
+    ;
+    if(password.trim().length==0){
+        $('.container-fluid').text('密码不能为空')
+        $('#modelId').modal();
+        return;
+    }
+})
+$('#login-btn').on('click',function(){
+    let password=$('#password').val();
+    let userName=$('#userName').val();
+    $('#userName').blur();
+    $('#password').blur();
+    ajax({
+        url:'http://127.0.0.1:8080/doLogin',
+        type:'post',
+        data:{
+            userName:userName,
+            password:password
+        },
+        callback:function(res){
+            if(res.code==200){
+                localStorage.setItem('userId',res.userId);
+                location.href = './index.html';
+            }else{
+                // alert(res.msg);
+                $('.container-fluid').text(res.msg)
+                $('#modelId').modal();
+            }
+        }
+    })
+})
+</script> -->
+
+</html>

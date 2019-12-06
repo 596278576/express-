@@ -1,0 +1,269 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hero - Admin</title>
+    <link rel="stylesheet" href="../static/css/bootstrap.css">
+    <style>
+        .hero-list img {
+            width: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="page-header container">
+            <h1>王者荣耀 <small>英雄管理器</small></h1>
+        </div>
+    </header>
+    <div class="container hero-list">
+        <form id='myform'>
+            <input type="hidden" name="img" id="headSrc">
+            <table class="table table-hover">
+                <tbody>
+                    <tr>
+                        <td>姓名：</td>
+                        <td><input type="text" name="name"></td>
+                    </tr>
+                    <tr>
+                        <td>性别：</td>
+                        <td><input id="nan" name="gender" value="男" type="radio"><label for="nan">男</label> <input
+                                name="gender" value="女" type="radio" id="nv"><label for="nv">女</label></td>
+                    </tr>
+                    <tr>
+                        <td>头像：</td>
+                        <td><img src="../static/images/0.jpg" alt="" id="photo" width="100">
+                            <input type="file" id="img"></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><input class="btn btn-primary" type="button" id="sub" value="新增"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+
+    <!-- Button trigger modal -->
+    <!-- <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modelId">
+      Launch
+    </button> -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">提示</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="container-fluid">
+                        新增成功，稍后为您自动跳转
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="../static/js/jquery.js"></script>
+<script src="../static/js/bootstrap.js"></script>
+<script>
+$('#img').on('change',function(){
+    let file=this.files[0];
+    let fd=new FormData();
+    fd.append('pic',file);
+    $.ajax({
+        url:'http://127.0.0.1:8080/uploadHeadImg',
+        type:'post',
+        data:fd,
+        processData:false,
+        contentType:false,
+        success:function(res){
+            if(res.code==200){
+                $('#photo').attr('src',res.baseDir + res.filePath);
+                $('#headSrc').val(res.filePath);
+            }
+        }
+    })
+})
+$('#sub').on('click',function(){
+    let data=$('#myform').serialize();
+    $.ajax({
+        url: 'http://127.0.0.1:8080/addNewHero',
+        data:data,
+        type:'post',
+        success:function(res){
+            if(res.code==200){
+                $('.container-fluid').text(res.msg+'即将跳转');
+                $('#modelId').modal();
+                setTimeout(function(){
+                    location.href='./index.html'
+                },3000)
+            }else{
+                $('.container-fluid').text(res.msg+'即将跳转');
+                $('#modelId').modal();
+            }
+        }
+    })
+})
+</script>
+<!-- <script>
+$('#img').on('change',function(){
+    let file=this.files[0];
+    let fd=new FormData();
+    fd.append('pic',file);
+    // console.log(fd);
+    
+    $.ajax({
+        url: 'http://127.0.0.1:8080/uploadHeadImg',
+        data:fd,
+        type:'post',
+        processData:false,
+        contentType:false,
+        success:function(res){
+            console.log(res);
+            
+            if(res.code==200){
+                $('#photo').attr('src',res.baseDir+res.filePath);
+                // 把名字传给隐藏域
+                $('#headSrc').val(res.filePath);
+            }
+        }
+    })
+})
+$('#sub').on('click',function(){
+    let data=$('#myform').serialize();
+    $.ajax({
+        url: 'http://127.0.0.1:8080/addNewHero',
+        data:data,
+        type:'post',
+        success:function(res){
+            if(res.code==200){
+                
+                location.href='./index.html'
+            }else{
+                $('.container-fluid').text(res.msg);
+                    $('#modelId').modal();
+            }
+        }
+    })
+})
+</script> -->
+<!-- <script>
+    $('#sub').on('click', function () {
+        
+        let data = $('#myform').serialize();
+        $.ajax({
+            url: 'http://127.0.0.1:8080/addNewHero',
+            data: data,
+            type: 'post',
+            success: function (res) {
+                if (res.code == 200) {
+                    location.href = './index.html';
+
+                } else {
+                    // 提示用户出错
+                    $('.container-fluid').text(res.msg);
+                    $('#modelId').modal();
+                }
+            }
+        })
+    }) -->
+
+<!-- </script> -->
+
+<!-- <script>
+    /*
+      实现图片的上传先
+        选中图片之后，把图片上传到服务器
+        需要使用ajax上传到服务器
+    */
+    // 上传做起来稍微有点特殊，所以先使用元素的js来写
+    let uploadBtn = document.querySelector('#img');
+    let photo = document.querySelector('#photo');
+
+    // 注册事件 - click - 不要使用点击事件，因为点击完成的时候，图片还没有被选择
+    // 事件应该是  chagne 事件 ， 表单元素的value属性发生改变的时候触发的事件
+    uploadBtn.onchange = function () {
+        // console.log(1);
+        // 得到图片
+        // console.dir(this.files[0]);
+        let file = this.files[0];
+        // 图片此时是一个固体，需要先转换为液体才可以通过网线上传
+        // 有一个专门做这个事情的老哥 —— FormData 对象， 专门负责收集表单数据的，可以把表单里面的文件，转换为 文件流
+        let fd = new FormData();
+        // 指挥它开始把文件转换为文件流
+        // fd.append('键',上传到服务器的数据);
+        fd.append('pic',file);
+        // 使用ajax把图片上传
+        let xhr = new XMLHttpRequest();
+        xhr.open('post','http://127.0.0.1:8080/uploadHeadImg');
+        xhr.send(fd); // 让fd对象搭上xhr的快车，就可以开心的前往未知的服务器了
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState === 4 && xhr.status === 200){
+                res = JSON.parse(xhr.responseText);;
+                // console.log(xhr.responseText);
+                // 如果上传成功了，我们会把页面上的图片替换一下
+                if(res.code === 200){
+                    photo.src = res.baseDir + res.filePath;
+                }
+            }
+        }
+    }
+</script> -->
+<!-- <script>
+$(function(){
+    // change是失焦之后input的值改变了才会触发的事件
+    $('#img').on('change',function(){
+        let file = this.files[0];
+        let formData = new FormData();
+        formData.append('pic',file);转换二进制
+        $.ajax({
+            type : 'post',
+            url : '/uploadHeadImg',
+            contentType: false,
+            processData: false,
+            data : formData,
+            success(res){
+                if(res.code !== 200){
+                    return;
+                }
+                $("#photo").attr('src',res.baseDir + res.filePath);
+                $("#headSrc").val(res.filePath);
+            }
+        })
+    });
+
+    $('#sub').on('click',function(){
+        let data = $('#myform').serialize();
+        // console.log(data);
+        $.ajax({
+            type : 'post',
+            url : '/addNewHero',
+            data ,
+            success(res){
+                let text = res.code == 200 ? '新增成功，稍后为您自动跳转' : '新增失败'
+                $(".container-fluid").text(text);
+                $('#modelId').modal();
+                if(res.code == 200){
+                    setTimeout(() => {
+                        location.href = './index.html';
+                    }, 3000);
+                }
+            }
+        });
+    });
+
+   
+});
+</script> -->
+
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+function ajax(obj){
+  //吧参数放到对象里面，可以实现无序传参或者参数默认值
+  obj=obj||{};
+  obj.url=obj.url||'';
+  obj.data=obj.data||{};
+  obj.type=obj.type||'get';
+  //需要遍历一下data，传进来的是对象格式，但是ajax需要的是键=值
+  let arr=[];
+  for(let key in obj.data){
+    arr.push(`${key}=${obj.data[key]}`);
+  }
+  obj.data=arr.join('&');
+let xhr=new XMLHttpRequest();
+//处理请求方式是get的情况
+if(obj.type.toLowerCase=='get'){
+    obj.url+='?'+obj.data;
+  }
+xhr.open(obj.type,obj.url);
+//处理请求方式是post的情况
+  if(obj.type.toLowerCase()=='post'){
+    // 设置请求头的编码
+    xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+    xhr.send(obj.data);
+  }else{
+    xhr.send();
+  }
+  // 监听变化
+  xhr.onreadystatechange=function(){
+    let response = xhr.responseText;
+    // readyState ajax对象状态
+    //status 网络请求状态
+    if(xhr.readyState==4&&xhr.status==200){
+      //判断请求头是否有json，如果有需要把返回的数据转换成对象的格式
+      if(xhr.getResponseHeader('Content-Type').indexOf('json')!==-1){
+        response=JSON.parse(xhr.responseText);
+      }
+      obj.callback&&obj.callback(response);
+    }
+  }
+}
+   
+
+ajax({
+    url:'http://127.0.0.1:8080/doRegister',
+    type:'post',
+    data:{
+    userName : 'dagouzi13147',
+    password : '123456',
+    phone : '12345678901'
+    },
+    callback:function(res){
+        if(res.code===200){
+            alert('注册成功')
+        }
+    }
+})
+</script>
+</html>
