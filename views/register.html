@@ -145,113 +145,113 @@
 	</div>
 
 	<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">提示</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="container-fluid">
-                        新增成功，稍后为您自动跳转
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">确认</button>
-                </div>
-            </div>
-        </div>
-    </div>
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">提示</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="container-fluid">
+						新增成功，稍后为您自动跳转
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">确认</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </body>
 <script src="../static/js/jquery.js"></script>
 <script src="../static/js/bootstrap.js"></script>
 
 <script>
-$('.name').on('blur',function(){
-	let userName=$(this).val();
-	if(userName.trim().length==0){
-		$('.container-fluid').text('用户名不能为空');
-        $('#modelId').modal();
-		return;
-	}
-	$.ajax({
-		url:'http://127.0.0.1:8080/isUserNameExist',
-		type:'get',
-		data:{
-			userName:userName
-		},
-		success:function(res){
-			if(res.code!==200){
-				$('.container-fluid').text(res.msg);
-                $('#modelId').modal();
-				return;
-			}
+	$('.name').on('blur', function () {
+		let userName = $(this).val();
+		if (userName.trim().length == 0) {
+			$('.container-fluid').text('用户名不能为空');
+			$('#modelId').modal();
+			return;
 		}
-
-	})
-})
-
-$('.pass').on('blur',function(){
-	let password=$(this).val();
-	if(password.trim().length<6||!(/[a-zA-Z]/.test(password))){
-		$('.container-fluid').text('密码强度太弱');
-        $('#modelId').modal();
-		return;
-	}
-})
-$('.repass').on('blur',function(){
-	let password2=$(this).val();
-	let password=$('.pass').val();
-	if(password!==password2){
-		$('.container-fluid').text('密码不一致');
-        $('#modelId').modal();
-		return;
-	}
-})
-$('.verify').on('click',function(){
-	let phone=$('.mobile').val();
-	if(phone.trim().length!=11){
-		$('.container-fluid').text('电话格式不正确');
-        $('#modelId').modal();
-		return;
-	}else{
-		setTimeout(function(){
-			let num=Math.floor(Math.random()*10000);
-			$('.code').val(num);
-		},3000)
-	}
-})
-
-$('.submit').on('click',function(){
-	$('.name').blur();
-	$('.pass').blur();
-	$('.repass').blur();
-	$('.verify').click();
-	let userName=$('.name').val();
-	let password=$('.pass').val();
-	let phone=$('.mobile').val();
-	$.ajax({
-		url:'http://127.0.0.1:8080/doRegister',
-		type:'post',
-		data:{
-			userName:userName,
-			password:password,
-			phone:phone
-		},
-		success:function(res){
-			if(res.code==200){
-				$('.container-fluid').text(res.msg+'即将跳转登录页面');
-        		$('#modelId').modal();
-				setTimeout(function(){
-					location.href='./login.html'
-				},3000)
+		$.ajax({
+			url: 'http://127.0.0.1:8080/isUserNameExist',
+			type: 'get',
+			data: {
+				userName: userName
+			},
+			success: function (res) {
+				if (res.code !== 200) {
+					$('.container-fluid').text(res.msg);
+					$('#modelId').modal();
+					return;
+				}
 			}
+
+		})
+	})
+
+	$('.pass').on('blur', function () {
+		let password = $(this).val();
+		if (password.trim().length < 6 || !(/[a-zA-Z]/.test(password))) {
+			$('.container-fluid').text('密码强度太弱');
+			$('#modelId').modal();
+			return;
 		}
 	})
-})
+	$('.repass').on('blur', function () {
+		let password2 = $(this).val();
+		let password = $('.pass').val();
+		if (password !== password2) {
+			$('.container-fluid').text('密码不一致');
+			$('#modelId').modal();
+			return;
+		}
+	})
+	$('.verify').on('click', function () {
+		let phone = $('.mobile').val();
+		if (phone.trim().length != 11) {
+			$('.container-fluid').text('电话格式不正确');
+			$('#modelId').modal();
+			return;
+		} else {
+			setTimeout(function () {
+				let num = Math.floor(Math.random() * 10000);
+				$('.code').val(num);
+			}, 3000)
+		}
+	})
+
+	$('.submit').on('click', function () {
+		$('.name').blur();
+		$('.pass').blur();
+		$('.repass').blur();
+		$('.verify').click();
+		let userName = $('.name').val();
+		let password = $('.pass').val();
+		let phone = $('.mobile').val();
+		$.ajax({
+			url: 'http://127.0.0.1:8080/doRegister',
+			type: 'post',
+			data: {
+				userName: userName,
+				password: password,
+				phone: phone
+			},
+			success: function (res) {
+				if (res.code == 200) {
+					$('.container-fluid').text(res.msg + '即将跳转登录页面');
+					$('#modelId').modal();
+					setTimeout(function () {
+						location.href = './login.html'
+					}, 3000)
+				}
+			}
+		})
+	})
 </script>
 <!-- <script>
 $('.name').on('blur',function(){
@@ -332,4 +332,5 @@ $('.submit').on('click',function(){
 	})
 })
 </script> -->
+
 </html>
